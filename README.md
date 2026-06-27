@@ -1,9 +1,9 @@
-<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/ce091f0a-4ec4-4b77-bb30-9dc14a6db339" /># Dildows 7
+# Dildows 7
 
 An open-source, work-in-progress, unfinished, browser-based attempt at simulating the Windows 7 desktop experience. This project is a personal, totally inaccurate (for now) nostalgic dive into the iconic operating system, built with vanilla HTML, CSS, and JavaScript.
 
 <p align="center">
-  <img src="https://imgur.com/ZRT7Vl2" alt="Dildows 7 Desktop Screenshot" width="800">
+  <img src="https://i.imgur.com/ZRT7Vl2.png" alt="Dildows 7 Desktop Screenshot" width="800">
 </p>
 
 ## Table of Contents
