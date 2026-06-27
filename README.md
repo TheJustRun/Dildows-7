@@ -109,4 +109,4 @@ Use the code for commercial purposes without explicit permission.
 - [ ] Performance optimizations for lower-end hardware.
 
 ## Contributing
-Contributions are welcome! If you'd like to help improve **Dildowss 7**, please feel free to open an issue or submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! If you'd like to help improve **Dildows 7**, please feel free to open an issue or submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
