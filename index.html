@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dildows 7</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/7.css" />
+    <link rel="stylesheet" href="assets/jsdos/js-dos.css">
+    
+</head>
+<body>
+
+    <!-- Boot screen — shown on page load, fades out after ~1.4s. -->
+    <div id="boot-screen">
+        <div class="boot-logo">
+            <div class="boot-orb"></div>
+            <div class="boot-text">Welcome</div>
+        </div>
+    </div>
+
+    <!-- Desktop — wallpaper container holding icons, windows, and selection box. -->
+    <div id="desktop">
+
+        <!-- Rubber-band selection box drawn while the user drag-selects icons. -->
+        <div id="selection-box"></div>
+
+        <!-- Desktop icons grid — each icon has a data-app attribute used to launch apps. -->
+        <div id="desktop-icons">
+            <div class="desktop-icon" data-app="aboutme" tabindex="0">
+                <div class="icon-img icon-aboutme"></div>
+                <div class="icon-label">About Me</div>
+            </div>
+            <div class="desktop-icon" data-app="computer" tabindex="0">
+                <div class="icon-img icon-computer"></div>
+                <div class="icon-label">Computer</div>
+            </div>
+            <div class="desktop-icon" data-app="recyclebin" tabindex="0">
+                <div class="icon-img icon-recyclebin"></div>
+                <div class="icon-label">Recycle Bin</div>
+            </div>
+            <div class="desktop-icon" data-app="notepad" tabindex="0">
+                <div class="icon-img icon-notepad"></div>
+                <div class="icon-label">Notepad</div>
+            </div>
+            <div class="desktop-icon" data-app="calculator" tabindex="0">
+                <div class="icon-img icon-calculator"></div>
+                <div class="icon-label">Calculator</div>
+            </div>
+            <div class="desktop-icon" data-app="paint" tabindex="0">
+                <div class="icon-img icon-paint"></div>
+                <div class="icon-label">Paint</div>
+            </div>
+            <div class="desktop-icon" data-app="ie" tabindex="0">
+                <div class="icon-img icon-ie"></div>
+                <div class="icon-label">Internet Explorer</div>
+            </div>
+            <div class="desktop-icon" data-app="mediaplayer" tabindex="0">
+                <div class="icon-img icon-mediaplayer"></div>
+                <div class="icon-label">Media Player</div>
+            </div>
+            <div class="desktop-icon" data-app="games" tabindex="0">
+                <div class="icon-img icon-games"></div>
+                <div class="icon-label">Games</div>
+            </div>
+        </div>
+
+        <!-- Right-click menu shown when clicking the bare desktop. -->
+        <div class="context-menu" id="desktop-context-menu">
+            <div class="context-item" data-action="view">View <span class="context-arrow">▶</span>
+                <div class="context-submenu">
+                    <div class="context-item" data-action="view-large">Large icons</div>
+                    <div class="context-item" data-action="view-medium">Medium icons</div>
+                    <div class="context-item" data-action="view-small">Small icons</div>
+                </div>
+            </div>
+            <div class="context-item" data-action="sort">Sort by <span class="context-arrow">▶</span>
+                <div class="context-submenu">
+                    <div class="context-item" data-action="sort-name">Name</div>
+                    <div class="context-item" data-action="sort-size">Size</div>
+                </div>
+            </div>
+            <div class="context-item" data-action="refresh">Refresh</div>
+            <div class="context-sep"></div>
+            <div class="context-item" data-action="new">New <span class="context-arrow">▶</span>
+                <div class="context-submenu">
+                    <div class="context-item" data-action="new-folder">Folder</div>
+                    <div class="context-item" data-action="new-textdoc">Text Document</div>
+                </div>
+            </div>
+            <div class="context-sep"></div>
+            <div class="context-item" data-action="personalize">Personalize</div>
+        </div>
+
+        <!-- Right-click menu shown when clicking a desktop icon. -->
+        <div class="context-menu" id="icon-context-menu">
+            <div class="context-item" data-action="open">Open</div>
+            <div class="context-sep"></div>
+            <div class="context-item" data-action="delete">Delete</div>
+            <div class="context-item" data-action="rename">Rename</div>
+            <div class="context-sep"></div>
+            <div class="context-item" data-action="properties">Properties</div>
+        </div>
+
+        <!-- All app windows are appended here by WindowManager. -->
+        <div class="background" id="windows-container"></div>
+
+    </div>
+
+    <!-- Taskbar — fixed to the bottom, contains Start, app buttons, and system tray. -->
+    <div id="taskbar">
+        <button id="start-button" style="all:unset;display:flex;align-items:center;justify-content:center;height:100%;width:56px;cursor:default;">
+            <div class="start-orb"></div>
+        </button>
+
+
+        <div id="taskbar-search-wrap"></div>
+
+        <div id="taskbar-apps"></div>
+
+        <div id="system-tray">
+            <div class="tray-icon" id="tray-network" title="Network">
+                    <img src="assets/icons/connect.png" alt="Network" style="width:16px;height:16px;display:block;">
+                </div>
+            <div class="tray-icons">
+                <div class="tray-icon" id="tray-volume" title="Volume">
+                    <img src="assets/icons/audio.png" alt="Volume" style="width:16px;height:16px;display:block;">
+                </div>
+
+            </div>
+            <div id="taskbar-clock">
+                <div id="clock-time">12:00 AM</div>
+                <div id="clock-date">1/1/2026</div>
+            </div>
+            <div id="show-desktop-btn" title="Show Desktop"></div>
+        </div>
+    </div>
+    
+<!-- Start Menu — toggled by the Start orb; contains apps, links, and power options. -->
+<div id="start-menu">
+    <!-- Drag handle for resizing the Start Menu height. -->
+    <div class="start-resize-handle" id="start-resize-handle"></div>
+    
+    <!-- Two-pane layout: left (app list) and right (user links + shutdown). -->
+    <div class="start-menu-body">
+        <!-- Left pane: scrollable pinned-apps list, All Programs row, and search bar. -->
+        <div class="start-left">
+            <div class="start-pinned" id="app-list">
+                <div class="start-item" data-app="aboutme">
+                    <div class="start-item-icon icon-aboutme"></div>
+                    <span>About Me</span>
+                </div>
+                <div class="start-item" data-app="ie">
+                    <div class="start-item-icon icon-ie"></div>
+                    <span>Internet Explorer</span>
+                </div>
+                <div class="start-item" data-app="notepad">
+                    <div class="start-item-icon icon-notepad"></div>
+                    <span>Notepad</span>
+                </div>
+                <div class="start-item" data-app="calculator">
+                    <div class="start-item-icon icon-calculator"></div>
+                    <span>Calculator</span>
+                </div>
+                <div class="start-item" data-app="paint">
+                    <div class="start-item-icon icon-paint"></div>
+                    <span>Paint</span>
+                </div>
+                <div class="start-item" data-app="mediaplayer">
+                    <div class="start-item-icon icon-mediaplayer"></div>
+                    <span>Windows Media Player</span>
+                </div>
+                <div class="start-item" data-app="games">
+                    <div class="start-item-icon icon-games"></div>
+                    <span>Games</span>
+                </div>
+            </div>
+
+            <!-- All Programs toggle at the bottom of the left pane. -->
+            <div class="start-all-programs" id="all-programs-btn">
+                <span class="context-arrow">▶</span>
+                <span>All Programs</span>  
+            </div>
+
+            <!-- Inline search bar — filters and launches apps by name. -->
+            <div id="start-search-wrap">
+                <input type="search" placeholder="Search programs and files" />
+            </div>
+        </div>
+
+        <!-- Right pane: user avatar, system navigation links, and shutdown controls. -->
+        <div class="start-right">
+            <!-- User avatar image that overlaps the menu top edge. -->
+            <div class="start-right-user">
+                <img src="assets/cutelittleme.jpg">
+            </div>
+
+            <div class="start-right-item" data-app="aboutme-docs">
+                <span class="right-label">JustRun</span>
+            </div>
+            <div class="start-right-item">
+                <span class="right-label">Documents</span>
+            </div>
+            <div class="start-right-item" data-app="pictures">
+                <span class="right-label">Pictures</span>
+            </div>
+            <div class="start-right-item" data-app="mediaplayer">
+                <span class="right-label">Music</span>
+            </div>
+            
+            <div class="start-right-divider"></div>
+            
+            <div class="start-right-item" data-app="games">
+                <span class="right-label">Games</span>
+            </div>
+            <div class="start-right-item" data-app="computer">
+                <span class="right-label">Computer</span>
+            </div>
+            
+            <div class="start-right-divider"></div>
+            
+            <div class="start-right-item" data-app="controlpanel">
+                <span class="right-label">Control Panel</span>
+            </div>
+            <div class="start-right-item" data-app="devices">
+                <span class="right-label">Devices and Printers</span>
+            </div>
+            
+            <div class="start-right-item" data-app="help">
+                <span class="right-label">Help and Support</span>
+            </div>
+
+            <!-- Pushes shutdown controls to the bottom of the right pane. -->
+            <div style="flex: 1;"></div>
+
+            <!-- Power controls: Shut Down button and arrow dropdown (restart, sleep, etc.). -->
+            <div class="start-right-shutdown">
+                <div class="start-right-divider" style="margin: 4px 12px 6px 12px;"></div>
+                <div class="start-shutdown-wrap">
+                    <button id="shutdown-btn">Shut down</button>
+                    <button id="shutdown-arrow">▶</button>
+                    <div class="shutdown-menu" id="shutdown-options">
+                        <div class="context-item" data-action="switchuser">Switch User</div>
+                        <div class="context-item" data-action="logout">Log Off</div>
+                        <div class="context-item" data-action="lock">Lock</div>
+                        <div class="context-sep"></div>
+                        <div class="context-item" data-action="restart">Restart</div>
+                        <div class="context-item" data-action="sleep">Sleep</div>
+                        <div class="context-item" data-action="hibernate">Hibernate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- ── App Content Templates ──────────────────────────────────────────────────
+     Each <template> is cloned by AppManager when its corresponding app is
+     launched. IDs follow the pattern content-{appKey}. -->
+
+    <template id="content-aboutme">
+        <div class="app-aboutme">
+            <div class="aboutme-sidebar">
+                <div class="aboutme-avatar"></div>
+                <div class="aboutme-name">JustRun</div>
+                <div class="aboutme-title">The Less Math I Know, the Better.</div>
+                <nav class="aboutme-nav">
+                    <a href="#section-bio" class="aboutme-nav-link active">Bio</a>
+                    <a href="#section-interests" class="aboutme-nav-link">Interests</a>
+                    <a href="#section-games" class="aboutme-nav-link">Favorite Games</a>
+                    <a href="#section-projects" class="aboutme-nav-link">Projects</a>
+                    <a href="#section-skills" class="aboutme-nav-link">Skills</a>
+                    <a href="#section-contact" class="aboutme-nav-link">Contact</a>
+                </nav>
+            </div>
+            <div class="aboutme-main">
+                <section id="section-bio" class="aboutme-section">
+                    <h2>Bio</h2>
+                    <p>Hey, I'm just a Game/Web Developer, i do stuff when am bored</p>
+                </section>
+                <section id="section-interests" class="aboutme-section">
+                    <h2>Favorite Artists</h2>
+                    <ul class="aboutme-list">
+                        <li>Kanye West (Ye)</li>
+                        <li>Tame Impala</li>
+                        <li>Strawberry Guy</li>
+                        <li>Samir Loussif</li>
+                        <li>Mild High Club</li>
+                    </ul>
+                </section>
+                <section id="section-games" class="aboutme-section">
+                    <h2>Favorite Games</h2>
+                    <ul class="aboutme-list">
+                        <li>Bioshock trilogy</li>
+                        <li>Half-life &amp; Half-Life 2</li>
+                        <li>Minecraft</li>
+                        <li>Silent Hill Trilogy</li>
+                        <li>Counter-Strike</li>
+                        <li>Age of Empires 2</li>
+                    </ul>
+                </section>
+                <section id="section-projects" class="aboutme-section">
+                    <h2>Projects (including W.I.P)</h2>
+                    <div class="project-card">
+                        <h3>This Website</h3>
+                        <p>A fully interactive Windows 7 desktop simulation built with vanilla HTML, CSS, and JavaScript, complete window manager, taskbar, start menu, and working mini-apps.</p>
+                    </div>
+                    <div class="project-card">
+                        <h3>Birch Tree</h3>
+                        <p>an in-development short atmospheric psychological horror game about "places we build to avoid the truth."</p>
+                    </div>
+                </section>
+                <section id="section-skills" class="aboutme-section">
+                    <h2>Skills</h2>
+                    <div class="skills-grid">
+                        <div class="skill-bar"><span>HTML / CSS</span><div class="bar"><div class="bar-fill" style="width:95%"></div></div></div>
+                        <div class="skill-bar"><span>JavaScript</span><div class="bar"><div class="bar-fill" style="width:90%"></div></div></div>
+                        <div class="skill-bar"><span>GDScript</span><div class="bar"><div class="bar-fill" style="width:67%"></div></div></div>
+                        <div class="skill-bar"><span>UI/UX</span><div class="bar"><div class="bar-fill" style="width:70%"></div></div></div>
+                        <div class="skill-bar"><span>Drawing</span><div class="bar"><div class="bar-fill" style="width:60%"></div></div></div>
+                    </div>
+                </section>
+                <section id="section-contact" class="aboutme-section">
+                    <h2>Contact</h2>
+                    <ul class="contact-list">
+                        <li><strong>Discord</strong> justrun</li>
+                        <li><strong>GitHub:</strong> github.com/TheJustRun</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-computer">
+        <div class="app-explorer">
+            <div class="explorer-toolbar">
+                <button class="explorer-nav-btn" data-nav="back" title="Back">◀</button>
+                <button class="explorer-nav-btn" data-nav="forward" title="Forward">▶</button>
+                <button class="explorer-nav-btn" data-nav="up" title="Up">▲</button>
+                <div class="explorer-address">
+                    <span class="explorer-address-icon icon-computer-sm"></span>
+                    <span class="explorer-address-text" id="explorer-path">Computer</span>
+                </div>
+                <div class="explorer-view-toggle">
+                    <button class="view-btn active" data-view="icons" title="Icons">▦</button>
+                    <button class="view-btn" data-view="list" title="List">☰</button>
+                    <button class="view-btn" data-view="details" title="Details"><img src="assets/icons/ui/details.png" alt="Details" style="width:14px;height:14px;"></button>
+                </div>
+                <div class="explorer-search"><input type="text" id="explorer-search-input" placeholder="Search Computer"></div>
+            </div>
+            <div class="explorer-body">
+                <div class="explorer-sidebar" id="explorer-sidebar">
+                    <div class="explorer-sidebar-group">
+                        <div class="sidebar-heading">Favorites</div>
+                        <div class="sidebar-item" data-path="desktop"><span class="sidebar-icon"><img src="assets/icons/ui/desktop.png" alt="Desktop"></span>Desktop</div>
+                        <div class="sidebar-item" data-path="downloads"><span class="sidebar-icon"><img src="assets/icons/ui/downloads.png" alt="Downloads"></span>Downloads</div>
+                        <div class="sidebar-item" data-path="recent"><span class="sidebar-icon"><img src="assets/icons/ui/recent.png" alt="Recent"></span>Recent Places</div>
+                    </div>
+                    <div class="explorer-sidebar-group">
+                        <div class="sidebar-heading">Libraries</div>
+                        <div class="sidebar-item" data-path="documents"><span class="sidebar-icon"><img src="assets/icons/ui/documents.png" alt="Documents"></span>Documents</div>
+                        <div class="sidebar-item" data-path="music"><span class="sidebar-icon"><img src="assets/icons/ui/music.png" alt="Music"></span>Music</div>
+                        <div class="sidebar-item" data-path="pictures"><span class="sidebar-icon"><img src="assets/icons/ui/pictures.png" alt="Pictures"></span>Pictures</div>
+                        <div class="sidebar-item" data-path="videos"><span class="sidebar-icon"><img src="assets/icons/ui/videos.png" alt="Videos"></span>Videos</div>
+                    </div>
+                    <div class="explorer-sidebar-group">
+                        <div class="sidebar-heading">Computer</div>
+                        <div class="sidebar-item active" data-path="computer"><span class="sidebar-icon"><img src="assets/icons/ui/computer.png" alt="Computer"></span>Computer</div>
+                        <div class="sidebar-item" data-path="recyclebin"><span class="sidebar-icon"><img src="assets/icons/ui/recyclebin.png" alt="Recycle Bin"></span>Recycle Bin</div>
+                    </div>
+                    <div class="explorer-sidebar-group">
+                        <div class="sidebar-heading">Apps</div>
+                        <div class="sidebar-item" data-path="games"><span class="sidebar-icon"><img src="assets/icons/ui/games.png" alt="Games"></span>Games</div>
+                        <div class="sidebar-item" data-path="controlpanel"><span class="sidebar-icon"><img src="assets/icons/ui/controlpanel.png" alt="Control Panel"></span>Control Panel</div>
+                        <div class="sidebar-item" data-path="devices"><span class="sidebar-icon"><img src="assets/icons/ui/devices.png" alt="Devices"></span>Devices and Printers</div>
+                        <div class="sidebar-item" data-path="help"><span class="sidebar-icon"><img src="assets/icons/ui/help.png" alt="Help"></span>Help and Support</div>
+                    </div>
+                </div>
+                <div class="explorer-main" id="explorer-main">
+                    <div class="explorer-grid" id="explorer-grid"></div>
+                </div>
+            </div>
+            <div class="explorer-statusbar" id="explorer-statusbar">0 items</div>
+        </div>
+    </template>
+
+    <template id="content-notepad">
+        <div class="app-notepad" style="display:flex;flex-direction:column;height:100%;">
+            <ul role="menubar" class="can-hover" style="flex-shrink:0;margin:0;padding:2px 4px;background:#f0f3f6;border-bottom:1px solid #d0d7dd;">
+                <li role="menuitem" tabindex="0" aria-haspopup="true">
+                    File
+                    <ul role="menu">
+                        <li role="menuitem" data-action="new"><a href="#">New</a></li>
+                        <li role="menuitem" data-action="open"><a href="#">Open...</a></li>
+                        <li role="menuitem" data-action="save"><a href="#">Save</a></li>
+                        <li role="menuitem" class="has-divider" data-action="exit"><a href="#">Exit</a></li>
+                    </ul>
+                </li>
+                <li role="menuitem" tabindex="0" aria-haspopup="true">
+                    Format
+                    <ul role="menu">
+                        <li role="menuitem" data-action="wordwrap"><a href="#">Word Wrap</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <textarea class="notepad-textarea" style="flex:1;border:none;outline:none;padding:8px 10px;font-family:Consolas,monospace;font-size:13px;resize:none;"></textarea>
+            <div class="status-bar" style="flex-shrink:0;">
+                <p class="status-bar-field notepad-statusbar">Ln 1, Col 1</p>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-calculator">
+        <div class="app-calculator">
+            <div class="calc-display">
+                <div class="calc-display-prev"></div>
+                <div class="calc-display-main">0</div>
+            </div>
+            <div class="calc-buttons">
+                <button class="calc-btn calc-fn" data-action="clear">C</button>
+                <button class="calc-btn calc-fn" data-action="ce">CE</button>
+                <button class="calc-btn calc-fn" data-action="backspace">⌫</button>
+                <button class="calc-btn calc-op" data-action="divide">÷</button>
+
+                <button class="calc-btn calc-num" data-num="7">7</button>
+                <button class="calc-btn calc-num" data-num="8">8</button>
+                <button class="calc-btn calc-num" data-num="9">9</button>
+                <button class="calc-btn calc-op" data-action="multiply">×</button>
+
+                <button class="calc-btn calc-num" data-num="4">4</button>
+                <button class="calc-btn calc-num" data-num="5">5</button>
+                <button class="calc-btn calc-num" data-num="6">6</button>
+                <button class="calc-btn calc-op" data-action="subtract">−</button>
+
+                <button class="calc-btn calc-num" data-num="1">1</button>
+                <button class="calc-btn calc-num" data-num="2">2</button>
+                <button class="calc-btn calc-num" data-num="3">3</button>
+                <button class="calc-btn calc-op" data-action="add">+</button>
+
+                <button class="calc-btn calc-fn" data-action="sign">±</button>
+                <button class="calc-btn calc-num" data-num="0">0</button>
+                <button class="calc-btn calc-fn" data-action="decimal">.</button>
+                <button class="calc-btn calc-equals" data-action="equals">=</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-paint">
+        <div class="app-paint">
+            <div class="paint-toolbar">
+                <div class="paint-tools">
+                    <button class="paint-tool active" data-tool="pencil" title="Pencil"><img src="assets/icons/ui/pencil.png" alt="Pencil" style="width:16px;height:16px;"></button>
+                    <button class="paint-tool" data-tool="eraser" title="Eraser"><img src="assets/icons/ui/eraser.png" alt="Eraser" style="width:16px;height:16px;"></button>
+                    <button class="paint-tool" data-tool="fill" title="Fill"><img src="assets/icons/ui/fill.png" alt="Fill" style="width:16px;height:16px;"></button>
+                    <button class="paint-tool" data-tool="line" title="Line"><img src="assets/icons/ui/line.png" alt="Line" style="width:16px;height:16px;"></button>
+                    <button class="paint-tool" data-tool="rect" title="Rectangle"><img src="assets/icons/ui/rect.png" alt="Rectangle" style="width:16px;height:16px;"></button>
+                    <button class="paint-tool" data-tool="circle" title="Circle"><img src="assets/icons/ui/circle.png" alt="Circle" style="width:16px;height:16px;"></button>
+                </div>
+                <div class="paint-size">
+                    <label>Size</label>
+                    <input type="range" min="1" max="30" value="3" id="paint-size-slider">
+                </div>
+                <button class="paint-clear-btn" id="paint-clear">Clear</button>
+            </div>
+            <div class="paint-body">
+                <div class="paint-palette" id="paint-palette"></div>
+                <canvas class="paint-canvas" id="paint-canvas" width="700" height="420"></canvas>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-ie">
+        <div class="app-ie">
+            <div class="ie-toolbar">
+                <button class="ie-nav-btn" data-nav="back" title="Back">◀</button>
+                <button class="ie-nav-btn" data-nav="forward" title="Forward">▶</button>
+                <button class="ie-nav-btn" data-nav="refresh" title="Refresh">⟳</button>
+                <button class="ie-nav-btn" data-nav="home" title="Home"><img src="assets/icons/ui/home.png" alt="Home" style="width:16px;height:16px;"></button>
+                <div class="ie-address-bar">
+                    <input type="text" class="ie-address-input" value="home.html">
+                    <button class="ie-go-btn">→</button>
+                </div>
+            </div>
+            <div class="ie-tabs">
+                <div class="ie-tab active" data-page="home">Home</div>
+                <div class="ie-tab" data-page="portfolio">Portfolio</div>
+                <div class="ie-tab" data-page="blog">Blog</div>
+            </div>
+            <div class="ie-content">
+                <div class="ie-page" data-page="home">
+                    <h1>Welcome</h1>
+                    <p>it's fake, go away.</p>
+                    <hr>
+                    <p>Search engine of choice: <em>Cosmos Search</em> — "Find anything, probably."</p>
+                </div>
+                <div class="ie-page" data-page="portfolio" style="display:none">
+                    <h1>Hi</h1>
+                    <p>Hello.</p>
+                    <p>How are you doing?</p>
+                </div>
+                <div class="ie-page" data-page="blog" style="display:none">
+                    <h1>Blog</h1>
+                    <p><strong>Why Dildows?</strong>   It's funny.</p>
+                    <p><strong>How long did it took you to make this?</strong>   A week ig</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-mediaplayer">
+        <div class="app-mediaplayer">
+            <div class="mp-art"></div>
+            <div class="mp-trackinfo">
+                <div class="mp-track-title">Synthwave Sunset</div>
+                <div class="mp-track-artist">pissmaker</div>
+            </div>
+            <div class="mp-progress">
+                <span class="mp-time-current">0:00</span>
+                <input type="range" id="mp-progress-slider" min="0" max="100" value="0">
+                <span class="mp-time-total">3:24</span>
+            </div>
+            <div class="mp-controls">
+                <button class="mp-btn" data-action="prev"><img src="assets/icons/ui/mp-prev.png" alt="Prev" style="width:16px;height:16px;"></button>
+                <button class="mp-btn mp-play" data-action="play"><img src="assets/icons/ui/mp-play.png" alt="Play" style="width:16px;height:16px;" id="mp-play-icon"></button>
+                <button class="mp-btn" data-action="next"><img src="assets/icons/ui/mp-next.png" alt="Next" style="width:16px;height:16px;"></button>
+            </div>
+            <div class="mp-volume">
+                <span><img src="assets/icons/ui/volume.png" alt="Volume" style="width:16px;height:16px;vertical-align:middle;"></span>
+                <input type="range" id="mp-volume-slider" min="0" max="100" value="70">
+            </div>
+            <div class="mp-playlist">
+                <div class="mp-playlist-item active">1. Synthwave Sunset</div>
+                <div class="mp-playlist-item">2. Night Drive</div>
+                <div class="mp-playlist-item">3. Chiptune Dreams</div>
+                <div class="mp-playlist-item">4. Retro Boot</div>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-recyclebin">
+        <div class="app-recyclebin">
+            <div class="explorer-toolbar">
+                <button class="recyclebin-empty-btn" id="empty-recyclebin-btn">Empty Recycle Bin</button>
+            </div>
+            <div class="recyclebin-body">
+                <div class="recyclebin-empty-state">
+                    <div class="recyclebin-empty-icon"></div>
+                    <p>Recycle Bin is empty</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-games">
+        <div class="app-games">
+            <div class="games-grid">
+                <div class="game-launch-icon" data-game="solitaire">
+                    <div class="folder-icon icon-solitaire"></div>
+                    <span>Solitaire</span>
+                </div>
+                <div class="game-launch-icon" data-game="minesweeper">
+                    <div class="folder-icon icon-minesweeper"></div>
+                    <span>Minesweeper</span>
+                </div>
+                <div class="game-launch-icon" data-game="chesstitans">
+                    <div class="folder-icon icon-chess"></div>
+                    <span>Chess Titans</span>
+                </div>
+                <div class="game-launch-icon" data-game="doom">
+                    <div class="folder-icon icon-doom"></div>
+                    <span>DOOM</span>
+                </div>
+
+            </div>
+        </div>
+    </template>
+
+
+
+    <template id="content-doom">
+  <div class="app-doom" style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+    <div id="doom-container" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;">
+      <div id="doom-canvas-wrap" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
+    </div>
+  </div>
+</template>
+
+    <template id="content-solitaire">
+        <div class="app-solitaire">
+            <div class="solitaire-toolbar">
+                <button id="solitaire-new-game">New Game</button>
+                <div class="solitaire-score">Score: <span id="solitaire-score">0</span></div>
+                <div class="solitaire-timer">Time: <span id="solitaire-timer">0:00</span></div>
+            </div>
+            <div class="solitaire-board">
+                <div class="solitaire-top-row">
+                    <div class="solitaire-stock-waste">
+                        <div class="solitaire-pile" id="stock-pile" data-pile="stock"></div>
+                        <div class="solitaire-pile" id="waste-pile" data-pile="waste"></div>
+                    </div>
+                    <div class="solitaire-foundations" id="foundations"></div>
+                </div>
+                <div class="solitaire-tableau" id="tableau"></div>
+            </div>
+            <div class="solitaire-win-message" id="solitaire-win-message" style="display:none">
+                <div class="win-message-box"><img src="assets/icons/ui/win.png" alt="Win" style="width:24px;height:24px;vertical-align:middle;"> You Win! <img src="assets/icons/ui/win.png" alt="Win" style="width:24px;height:24px;vertical-align:middle;"><br><button id="solitaire-play-again">Play Again</button></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-minesweeper">
+        <div class="app-minesweeper">
+            <div class="minesweeper-header">
+                <div class="ms-counter" id="ms-mine-count">010</div>
+                <button class="ms-face" id="ms-face"><img src="assets/icons/ui/ms-face.png" alt=":)" style="width:20px;height:20px;"></button>
+                <div class="ms-counter" id="ms-timer">000</div>
+            </div>
+            <div class="minesweeper-grid" id="minesweeper-grid"></div>
+            <div class="ms-difficulty">
+                <button data-diff="beginner" class="active">Beginner</button>
+                <button data-diff="intermediate">Intermediate</button>
+                <button data-diff="expert">Expert</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-chesstitans">
+        <div class="app-chess">
+            <div class="chess-board" id="chess-board"></div>
+            <div class="chess-status" id="chess-status">White to move</div>
+            <button id="chess-reset">New Game</button>
+        </div>
+    </template>
+
+    <template id="content-controlpanel">
+        <div class="app-controlpanel">
+            <h2>Control Panel</h2>
+            <div class="cp-grid">
+                <div class="cp-item"><div class="cp-icon"><img src="assets/icons/ui/cp-display.png" alt="Display"></div><span>Display</span></div>
+                <div class="cp-item"><div class="cp-icon"><img src="assets/icons/ui/cp-sound.png" alt="Sound"></div><span>Sound</span></div>
+                <div class="cp-item"><div class="cp-icon"><img src="assets/icons/ui/cp-mouse.png" alt="Mouse"></div><span>Mouse</span></div>
+                <div class="cp-item"><div class="cp-icon"><img src="assets/icons/ui/cp-keyboard.png" alt="Keyboard"></div><span>Keyboard</span></div>
+                <div class="cp-item"><div class="cp-icon"><img src="assets/icons/ui/cp-network.png" alt="Network"></div><span>Network and Sharing Center</span></div>
+                <div class="cp-item"><div class="cp-icon"><img src="assets/icons/ui/cp-users.png" alt="User Accounts"></div><span>User Accounts</span></div>
+                <div class="cp-item"><div class="cp-icon"><img src="assets/icons/ui/cp-security.png" alt="Security"></div><span>System and Security</span></div>
+                <div class="cp-item"><div class="cp-icon"><img src="assets/icons/ui/cp-personalize.png" alt="Personalization"></div><span>Personalization</span></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-devices">
+        <div class="app-devices">
+            <h2>Devices and Printers</h2>
+            <div class="devices-grid">
+                <div class="device-item"><div class="device-icon"><img src="assets/icons/ui/dev-monitor.png" alt="Monitor"></div><span>PC</span></div>
+                <div class="device-item"><div class="device-icon"><img src="assets/icons/ui/dev-printer.png" alt="Printer"></div><span>HP LaserJet</span></div>
+                <div class="device-item"><div class="device-icon"><img src="assets/icons/ui/dev-keyboard.png" alt="Keyboard"></div><span>USB Keyboard</span></div>
+                <div class="device-item"><div class="device-icon"><img src="assets/icons/ui/dev-mouse.png" alt="Mouse"></div><span>USB Mouse</span></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="content-help">
+        <div class="app-help">
+            <h2>Windows Help and Support</h2>
+            <p>Search for help topics, or browse popular topics below:</p>
+            <ul class="aboutme-list">
+                <li>Getting started with this desktop</li>
+                <li>Using the taskbar and Start menu</li>
+                <li>Working with windows</li>
+                <li>About this site</li>
+            </ul>
+            <p>This whole "About Me" page is a fully working Windows 7 simulation, built with HTML, CSS, and JavaScript. Double-click any desktop icon to open an app, drag windows around, and try minimizing, maximizing, or snapping them to the screen edges.</p>
+        </div>
+    </template>
+
+    <!-- ── Dialog Templates ─────────────────────────────────────────────────────
+     #tpl-dialog is cloned by DialogManager for every modal.
+     Uses the same tpl-window structure so it inherits full Aero glass styling. -->
+    <template id="tpl-dialog">
+        <div class="window glass dialog-window" style="position:absolute;margin:0;padding:0;background:transparent;min-width:340px;max-width:440px;min-height:unset;width:auto;">
+            <div class="title-bar">
+                <div class="title-bar-text">Message</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Close" class="Close dialog-close-btn"></button>
+                </div>
+            </div>
+            <div class="window-body has-space dialog-window-body" style="background:#eef3f7;">
+                <div class="dialog-body">
+                    <div class="dialog-icon"></div>
+                    <div class="dialog-message"></div>
+                </div>
+                <div class="dialog-buttons"></div>
+            </div>
+        </div>
+    </template>
+
+    <div id="dialog-overlay"></div>
+    <div id="dialogs-container"></div>
+
+
+<template id="tpl-window">
+  <div class="window glass" style="border:none;margin:0;padding:0;background:transparent;">
+    <div class="title-bar">
+      <div class="title-bar-text"></div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" class="Minimize"></button>
+        <button aria-label="Maximize" class="Maximize"></button>
+        <button aria-label="Close" class="Close"></button>
+      </div>
+    </div>
+    <div class="window-body has-space">
+      <div class="window-body-content"></div>
+    </div>
+    <div class="resize-handle resize-n"></div>
+    <div class="resize-handle resize-s"></div>
+    <div class="resize-handle resize-e"></div>
+    <div class="resize-handle resize-w"></div>
+    <div class="resize-handle resize-nw"></div>
+    <div class="resize-handle resize-ne"></div>
+    <div class="resize-handle resize-sw"></div>
+    <div class="resize-handle resize-se"></div>
+  </div>
+</template>
+
+    <!-- Shutdown overlay — appears on Shut Down / Restart, covers the entire viewport. -->
+    <div id="shutdown-screen">
+        <div class="shutdown-text">Shutting down...</div>
+    </div>
+    <!-- Audio elements — replace source paths in assets/sfx/ with your own files.
+     Supported by SoundManager; any browser-audio format works (.wav, .mp3, .ogg). -->
+    <audio id="snd-boot"    src="assets/sfx/Logon.wav"    preload="auto"></audio>
+    <audio id="snd-click"   src="putwhatever"   preload="auto"></audio>
+    <audio id="snd-open"    src="putwhatever"    preload="auto"></audio>
+    <audio id="snd-close"   src="putwhatever"   preload="auto"></audio>
+    <audio id="snd-error"   src="assets/sounds/error.mp3"   preload="auto"></audio>
+    <script src="assets/jsdos/js-dos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
