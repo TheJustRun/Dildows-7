@@ -1,6 +1,6 @@
 # Dildows 7
 
-an open-source, browser-based attempt at simulating the Windows 7 desktop experience. This project is a personal, totally inaccurate (for now) nostalgic dive into the iconic operating system, built with vanilla HTML, CSS, and JavaScript.
+An open-source, work-in-progress, unfinished, browser-based attempt at simulating the Windows 7 desktop experience. This project is a personal, totally inaccurate (for now) nostalgic dive into the iconic operating system, built with vanilla HTML, CSS, and JavaScript.
 
 <p align="center">
   <img src="https://i.imgur.com/ZF5DXnU.png" alt="Dildows 7 Desktop Screenshot" width="800">
