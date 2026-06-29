@@ -101,7 +101,7 @@ Sell this project or any direct derivative of it.
 Use the code for commercial purposes without explicit permission.
 
 ## Roadmap
-**Dildows 7** is constantly evolving. Here are some features we're considering for the future:
+**Dildows 7** is evolving. Here are some features we're considering for the future:
 - [ ] Improved theme customization (changing wallpapers, system colors).
 - [ ] More classic games (Hearts, FreeCell).
 - [ ] A better, fully functional file system with file management.
