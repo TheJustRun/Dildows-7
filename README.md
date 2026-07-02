@@ -24,9 +24,7 @@ This project is more than just a static theme but a fully interactive playground
 
 ## Getting Started
 ### The Easiest Way: GitHub Pages 🚀
-**Dildows 7** is hosted on GitHub Pages, you can try it:
-
-
+**Dildows 7** is hosted on GitHub Pages
 
 ### Running Locally
 If you prefer to run it on your own machine:
@@ -69,13 +67,13 @@ The simulation comes with a collection of classic apps, each built using native 
 - **And More:** The Recycle Bin, Control Panel, Devices and Printers, and Help & Support modules are also included as "interactive" placeholders.
 
 ## Technology & Credits
-This project is using many open-source libraries, tools, and assets.
+This project uses many open-source libraries, tools, and assets.
 
 - **Core Engine:** Built entirely from scratch with **Vanilla HTML, CSS, and JavaScript**.
-- **CSS Framework:** The user interface is heavily inspired by and styled using the aesthetics of **7.css**, a library for creating retro Windows interfaces.
+- **CSS Framework:** The user interface is heavily inspired by and styled using **7.css**, a library for creating Windows 7's interfaces.
 - **Game Emulation:**
-    - **DOOM:** Powered by the excellent **js-dos** library, allowing the classic shareware version to run in the browser.
-- **AI-Assisted Development:** Like a mathematician using a calculator, AI was used as a tool to accelerate the development process. It assisted with generating boilerplate code, debugging complex logic, optimizing certain routines, and adding notes on the code, which allowed for more time to be spent on the creative and design aspects of the project and helping future contributors. The final product, however, is the result of careful curation, design, and assembly by a human developer. Think of it as having a very smart assistant—the ideas, the vision, and the finishing touches are all my own.
+    - **DOOM:** Powered by the **js-dos** library, allowing the DOOM to run in the browser.
+- **AI-Assisted Development:** Like a math guy using a calculator, AI was used as a tool to accelerate the development process. It assisted with generating boilerplate code, debugging complex logic, optimizing certain routines, and adding notes on the code, which allowed for more time to be spent on the creative and design aspects of the project and helping future contributors. The final product, however, is the result of careful curation, design, and assembly by a human developer. like a very smart assistant the ideas, the vision, and the finishing touches are all my own, also this was also **mostly** written by ai cause am third worlder and my english is absolute buns, thank you for understanding.
 
 ## Legal & Disclaimer
 Please read the following carefully:
